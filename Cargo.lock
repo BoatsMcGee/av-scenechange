@@ -132,9 +132,8 @@ checksum = "c08606f8c3cbf4ce6ec8e28fb0014a2c086708fe954eaa885384a6165172e7e8"
 
 [[package]]
 name = "av-decoders"
-version = "0.10.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a31ed07c3a0db5375deded31ba4db91bdf43660781680eae78392d3dafd77d9d"
+version = "0.11.0"
+source = "git+https://github.com/BoatsMcGee/av-decoders?branch=ffms2-track-index#c48e5e7234b8184ba55857e893975705521fa6dd"
 dependencies = [
  "ffmpeg-the-third",
  "ffms2-sys",
@@ -147,7 +146,7 @@ dependencies = [
 
 [[package]]
 name = "av-scenechange"
-version = "0.23.0"
+version = "0.23.1"
 dependencies = [
  "aligned",
  "anyhow",

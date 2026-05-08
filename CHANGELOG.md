@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 0.23.1
+
+- Update `av_decoders` crate from `0.10.0` to `0.11.0`
+
 ## Version 0.23.0
 
 - feat: add `static_simd` Cargo feature
