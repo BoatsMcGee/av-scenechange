@@ -1,8 +1,21 @@
 # Changelog
 
-## Version 0.23.1
+## Version 0.24.1
 
-- Update `av_decoders` crate from `0.10.0` to `0.11.0`
+- perf: change to debug_assert in hot paths
+- perf: optimize away checks for invalid block size
+
+## Version 0.24.0
+
+- chore!: bump MSRV to 1.95
+- chore!: update `v_frame` to 0.7.0
+- feat: add `threading` Cargo feature, enabled by default, to allow builds without `rayon`
+- feat: add tracing spans and switch tracing output from Chrome traces to Perfetto
+- perf: elide more bounds checks in intra/inter analysis paths
+- refactor: remove dead sub-pixel motion estimation and motion compensation code
+- chore: update `av-decoders` to 0.11.0 and other dependencies
+- chore: remove unused dependencies including `pastey` and `thiserror`
+- chore: limit `cpufeatures` dependency to x86_64 targets
 
 ## Version 0.23.0
 

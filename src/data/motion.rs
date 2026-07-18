@@ -9,8 +9,6 @@ use std::{
 use arrayvec::ArrayVec;
 use v_frame::{frame::Frame, pixel::Pixel, plane::Plane};
 
-use crate::data::{get_unchecked_mut_rel, get_unchecked_rel};
-
 const MV_IN_USE_BITS: usize = 14;
 pub const MV_UPP: i32 = 1 << MV_IN_USE_BITS;
 pub const MV_LOW: i32 = -(1 << MV_IN_USE_BITS);
@@ -138,14 +136,20 @@ impl Index<usize> for FrameMEStats {
     type Output = [MEStats];
 
     fn index(&self, index: usize) -> &Self::Output {
-        get_unchecked_rel(&self.stats, index * self.cols..(index + 1) * self.cols)
+        unsafe {
+            self.stats
+                .get_unchecked(index * self.cols..(index + 1) * self.cols)
+        }
     }
 }
 
 #[allow(clippy::missing_inline_in_public_items)]
 impl IndexMut<usize> for FrameMEStats {
     fn index_mut(&mut self, index: usize) -> &mut Self::Output {
-        get_unchecked_mut_rel(&mut self.stats, index * self.cols..(index + 1) * self.cols)
+        unsafe {
+            self.stats
+                .get_unchecked_mut(index * self.cols..(index + 1) * self.cols)
+        }
     }
 }
 
@@ -242,7 +246,7 @@ macro_rules! tile_me_stats_common {
       type Output = [MEStats];
 
       fn index(&self, index: usize) -> &Self::Output {
-        assert!(index < self.rows);
+        debug_assert!(index < self.rows);
         // SAFETY: The above assert ensures we do not access OOB data.
         unsafe {
           let ptr = self.data.add(index * self.stride);
@@ -272,7 +276,7 @@ impl TileMEStatsMut<'_> {
 
 impl IndexMut<usize> for TileMEStatsMut<'_> {
     fn index_mut(&mut self, index: usize) -> &mut Self::Output {
-        assert!(index < self.rows);
+        debug_assert!(index < self.rows);
         // SAFETY: The above assert ensures we do not access OOB data.
         unsafe {
             let ptr = self.data.add(index * self.stride);

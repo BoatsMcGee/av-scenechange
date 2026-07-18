@@ -3,6 +3,7 @@ use v_frame::pixel::Pixel;
 use crate::{
     data::{
         hadamard::{hadamard4x4, hadamard8x8},
+        pixel_as_i32,
         plane::{Area, PlaneRegion, Rect},
         sad::get_sad,
     },
@@ -23,9 +24,9 @@ pub(super) fn get_satd_internal<T: Pixel>(
     h: usize,
     bit_depth: usize,
 ) -> u32 {
-    assert!(w <= 128 && h <= 128);
-    assert!(plane_org.rect().width >= w && plane_org.rect().height >= h);
-    assert!(plane_ref.rect().width >= w && plane_ref.rect().height >= h);
+    debug_assert!(w <= 128 && h <= 128);
+    debug_assert!(plane_org.rect().width >= w && plane_org.rect().height >= h);
+    debug_assert!(plane_ref.rect().width >= w && plane_ref.rect().height >= h);
 
     // Size of hadamard transform should be 4x4 or 8x8
     // 4x* and *x4 use 4x4 and all other use 8x8
@@ -62,8 +63,8 @@ pub(super) fn get_satd_internal<T: Pixel>(
                 .zip(chunk_org.rows_iter().zip(chunk_ref.rows_iter()))
             {
                 for (diff, (a, b)) in row_diff.iter_mut().zip(row_org.iter().zip(row_ref.iter())) {
-                    let a = a.to_i32().expect("value should fit in i32");
-                    let b = b.to_i32().expect("value should fit in i32");
+                    let a = pixel_as_i32(*a);
+                    let b = pixel_as_i32(*b);
                     *diff = a - b;
                 }
             }

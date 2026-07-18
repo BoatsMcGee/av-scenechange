@@ -1,9 +1,10 @@
 use std::mem::MaybeUninit;
 
+use v_frame::pixel::Pixel;
+
 pub(crate) mod block;
 pub(crate) mod frame;
 pub(crate) mod hadamard;
-pub(crate) mod mc;
 pub(crate) mod motion;
 pub(crate) mod plane;
 pub(crate) mod prediction;
@@ -21,44 +22,17 @@ pub unsafe fn slice_assume_init_mut<T: Copy>(slice: &'_ mut [MaybeUninit<T>]) ->
     unsafe { &mut *(slice as *mut [MaybeUninit<T>] as *mut [T]) }
 }
 
-#[allow(
-    clippy::inline_always,
-    reason = "intended as a thin compile-time-elided wrapper"
-)]
-#[inline(always)]
-pub fn get_unchecked_rel<T, I: std::slice::SliceIndex<[T]>>(
-    arr: &[T],
-    index: I,
-) -> &<I as std::slice::SliceIndex<[T]>>::Output {
-    use cfg_if::cfg_if;
-
-    cfg_if! {
-        if #[cfg(debug_assertions)] {
-            arr.get(index).expect("array index out of bounds")
-        } else {
-            // SAFETY: verified in debug mode
-            unsafe { arr.get_unchecked(index) }
-        }
-    }
+#[inline]
+pub(crate) fn pixel_as_i32<T: Pixel>(pixel: T) -> i32 {
+    i32::from(pixel.into())
 }
 
-#[allow(
-    clippy::inline_always,
-    reason = "intended as a thin compile-time-elided wrapper"
-)]
-#[inline(always)]
-pub fn get_unchecked_mut_rel<T, I: std::slice::SliceIndex<[T]>>(
-    arr: &mut [T],
-    index: I,
-) -> &mut <I as std::slice::SliceIndex<[T]>>::Output {
-    use cfg_if::cfg_if;
+#[inline]
+pub(crate) fn pixel_as_u32<T: Pixel>(pixel: T) -> u32 {
+    u32::from(pixel.into())
+}
 
-    cfg_if! {
-        if #[cfg(debug_assertions)] {
-            arr.get_mut(index).expect("array index out of bounds")
-        } else {
-            // SAFETY: verified in debug mode
-            unsafe { arr.get_unchecked_mut(index) }
-        }
-    }
+#[inline]
+pub(crate) fn pixel_from_u16<T: Pixel>(value: u16) -> T {
+    unsafe { T::try_from(value).unwrap_unchecked() }
 }
